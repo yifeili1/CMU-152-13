@@ -1,0 +1,105 @@
+Solution:
+Border relations with Canada have never been better.
+1 2 4 8 16 32
+6 682
+0 0
+ionefg
+4 3 2 1 6 5
+
+
+Solution for everyphase:
+
+phase 1:
+    length: 52
+    0x402400:	66 'B'	111 'o'	114 'r'	100 'd'	101 'e'	114 'r'	32 ' '	114 'r'
+    0x402408:	101 'e'	108 'l'	97 'a'	116 't'	105 'i'	111 'o'	110 'n'	115 's'
+    0x402410:	32 ' '	119 'w'	105 'i'	116 't'	104 'h'	32 ' '	67 'C'	97 'a'
+    0x402418:	110 'n'	97 'a'	100 'd'	97 'a'	32 ' '	104 'h'	97 'a'	118 'v'
+    0x402420:	101 'e'	32 ' '	110 'n'	101 'e'	118 'v'	101 'e'	114 'r'	32 ' '
+    0x402428:	98 'b'	101 'e'	101 'e'	110 'n'	32 ' '	98 'b'	101 'e'	116 't'
+    0x402430:	116 't'	101 'e'	114 'r'	46 '.'
+
+phase 3:
+    The input number is two numbers:"%d %d"
+    first number: smaller than 7
+    0x0000000000400fb2 <+111>:	mov    $0x0,%eax
+    Then, the different first number will cause the program jump
+    to the different postion of the program. Apply different calculation
+    rule to calculate a different number. Then compare the number to the
+    second number. If the second number is equal to the calculated number,
+    the phase will be defused.
+
+phase 4:
+    "%d %d"
+    get two integers as input
+
+    0x000000000040102e <+34>:	cmpl   $0xe,0x8(%rsp)
+    0x0000000000401033 <+39>:	jbe    0x40103a <phase_4+46>
+    first number (0x8(%rsp)) below 8 unsigned. i.e. int first in [0, 7].
+
+    0x0000000000401048 <+60>:	callq  0x400fce <func4>
+    call func4(int first_number, 0, 14)
+    edi: first_number
+    esi: 0
+    edx: 14
+    func4 must return 0;
+
+phase 5:
+    0x000000000040107f <+29>:	cmp    $0x6,%eax
+    string length: 6
+
+
+    0x0000000000401067 <+5>:	mov    %rdi,%rbx
+    rbx is the adress of the input string
+
+    string in the adress 0x40245e is "flyers"
+
+    string at the adress 0x4024b0:
+    (gdb) x/s 0x4024b0
+        0x4024b0 <array.3449>:	"maduiersnfotvbylSo you think you can stop the bomb with ctrl-c, do you?"
+
+    Denote the input string as I. The program using the lower four bits of each character of the input string as the index of the string at 0x4024b0 (denoted as S), then make a new string S' with length 6 and S'[N] = S[ascii(I[N])]. The bomb will exploded unless S' == "flyers".
+
+phase 6:
+
+    read six numbers
+        0x0000000000401106 <+18>:	callq  0x40145c <read_six_numbers>
+
+    all of six number should be different
+       0x000000000040113b <+71>:	cmp    %eax,0x0(%rbp)
+       0x000000000040113e <+74>:	jne    0x401145 <phase_6+81>
+       0x0000000000401140 <+76>:	callq  0x40143a <explode_bomb>
+
+
+
+    and they are all less or equal than 6:
+       0x000000000040111b <+39>:	sub    $0x1,%eax
+       0x000000000040111e <+42>:	cmp    $0x5,%eax
+       0x0000000000401121 <+45>:	jbe    0x401128 <phase_6+52>
+       0x0000000000401123 <+47>:	callq  0x40143a <explode_bomb>
+
+    then chage all the number to 7 - them, i.e. x = 7 - x:
+       x000000000040115b <+103>:	mov    $0x7,%ecx
+       0x0000000000401160 <+108>:	mov    %ecx,%edx
+       0x0000000000401162 <+110>:	sub    (%rax),%edx
+       0x0000000000401164 <+112>:	mov    %edx,(%rax)
+    then resort a linked-list using the order of the input numbers.
+    Fianlly, check if the numbers in the linked-list are acending ordered.
+    If not, the program will exploded the bomb.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
