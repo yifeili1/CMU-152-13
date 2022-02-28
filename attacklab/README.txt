@@ -1,4 +1,5 @@
-This file contains materials for one instance of the attacklab.
+# The code injection attack lab
+# Solution is in the solution.md
 
 Files:
 
